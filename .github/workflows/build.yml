@@ -197,7 +197,7 @@ jobs:
           if-no-files-found: error
 
   abi-check:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     name: SDK ABI check
     needs: build-linux
     runs-on: ubuntu-latest
@@ -208,6 +208,18 @@ jobs:
           clean: true
           submodules: recursive
           fetch-depth: 0
+
+      - name: Show SDK submodule info
+        shell: bash
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "SDK remote URL:"
+          git -C SDK remote -v || true
+          echo "SDK commit:"
+          git -C SDK rev-parse HEAD || true
+          echo "Submodule status:"
+          git submodule status || true
 
       - name: Declare build variables
         id: vars
