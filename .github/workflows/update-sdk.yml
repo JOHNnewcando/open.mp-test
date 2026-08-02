@@ -10,10 +10,10 @@ jobs:
 
     steps:
       - name: Clone SDK repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           clean: true
-          repository: "openmultiplayer/open.mp-sdk"
+          repository: "JOHNnewcando/open.mp-sdk-test"
           path: "SDK"
           ref: "master"
           submodules: recursive
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Network repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           clean: true
           repository: "openmultiplayer/open.mp-network"
