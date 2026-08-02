@@ -24,9 +24,13 @@ jobs:
         shell: bash
         run: |
           cd SDK
-          git fetch
-          git rebase origin/dev
-          git push || true
+          git fetch --all --prune
+          if git show-ref --verify --quiet refs/remotes/origin/dev; then
+            git rebase origin/dev
+            git push || true
+          else
+            echo "Remote branch origin/dev does not exist; skipping rebase/push"
+          fi
 
   update-network:
     runs-on: ubuntu-latest
