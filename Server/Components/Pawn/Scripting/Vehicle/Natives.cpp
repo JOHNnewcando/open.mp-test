@@ -422,7 +422,7 @@ SCRIPT_API(SetVehicleSpawnInfo, bool(IVehicle& vehicle, int modelid, Vector3 pos
 
 SCRIPT_API(GetVehicleModelCount, int(int modelid))
 {
-	if (modelid < 400 || modelid > 200000)
+	if (modelid < 400 || modelid >= 400 + MAX_VEHICLE_MODELS)
 		return 0;
 
 	auto& models = PawnManager::Get()->vehicles->models();
