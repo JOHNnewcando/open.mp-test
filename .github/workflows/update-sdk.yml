@@ -17,7 +17,7 @@ jobs:
           path: "SDK"
           ref: "master"
           submodules: recursive
-          token: ${{ secrets.CI_TOKEN }}
+          token: ${{ secrets.CI_TOKEN != '' && secrets.CI_TOKEN || github.token }}
 
       - name: Update SDK files from dev branch
         if: always()
@@ -39,7 +39,7 @@ jobs:
           path: "Network"
           ref: "master"
           submodules: recursive
-          token: ${{ secrets.CI_TOKEN }}
+          token: ${{ secrets.CI_TOKEN != '' && secrets.CI_TOKEN || github.token }}
 
       - name: Update Network files from dev branch
         if: always()
