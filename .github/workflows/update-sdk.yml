@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Clone SDK repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           clean: true
           repository: "JOHNnewcando/open.mp-sdk-test"
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Network repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           clean: true
           repository: "openmultiplayer/open.mp-network"
