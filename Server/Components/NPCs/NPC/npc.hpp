@@ -310,12 +310,12 @@ public:
 
 	void advance(TimePoint now);
 
-	IVehicle* getEnteringVehicle() override
+	IVehicle* getEnteringVehicle()
 	{
 		return vehicleToEnter_;
 	}
 
-	int getEnteringVehicleSeat() const override
+	int getEnteringVehicleSeat() const
 	{
 		return vehicleSeatToEnter_;
 	}
