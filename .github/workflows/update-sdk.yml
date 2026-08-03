@@ -1,4 +1,4 @@
-name: Update SDK & Network
+name: Update SDK & Parent Repository
 
 on:
   workflow_dispatch:
@@ -14,15 +14,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clone SDK repository
+      - name: Checkout SDK repository
         uses: actions/checkout@v4
         with:
-          clean: true
-          repository: "JOHNnewcando/open.mp-sdk-test"
-          path: "SDK"
-          ref: "master"
+          repository: JOHNnewcando/open.mp-sdk-test
+          ref: master
+          path: SDK
           fetch-depth: 0
-          submodules: recursive
           token: ${{ secrets.CI_TOKEN != '' && secrets.CI_TOKEN || github.token }}
 
       - name: Sync master with dev
@@ -33,40 +31,54 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git fetch --all --prune
+          git fetch origin --prune
 
           if git show-ref --verify --quiet refs/remotes/origin/dev; then
-            echo "Syncing master with origin/dev..."
-
             git checkout master
             git reset --hard origin/dev
-
             git push --force-with-lease origin master
-
-            echo "SDK synchronized successfully."
           else
-            echo "Remote branch origin/dev does not exist; skipping."
+            echo "origin/dev not found."
           fi
 
-  update-network:
+  update-parent:
+    needs: update-sdk
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clone Network repository
+      - name: Checkout parent repository
         uses: actions/checkout@v4
         with:
-          clean: true
-          repository: "openmultiplayer/open.mp-network"
-          path: "Network"
-          ref: "master"
+          repository: JOHNnewcando/open.mp-test
+          ref: master
+          path: Parent
+          fetch-depth: 0
           submodules: recursive
           token: ${{ secrets.CI_TOKEN != '' && secrets.CI_TOKEN || github.token }}
 
-      - name: Update Network files from dev branch
-        if: always()
+      - name: Update SDK submodule
         shell: bash
         run: |
-          cd Network
-          git fetch
-          git rebase origin/dev
-          git push || true
+          cd Parent
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git submodule sync --recursive
+          git submodule update --init SDK
+
+          cd SDK
+          git fetch origin
+          git checkout master
+          git pull origin master
+          cd ..
+
+          git add SDK
+
+          if git diff --cached --quiet; then
+            echo "SDK submodule already up to date."
+            exit 0
+          fi
+
+          git commit -m "Update SDK submodule"
+          git push origin master
