@@ -1,55 +1,87 @@
 name: Update SDK & Network
+
 on:
   workflow_dispatch:
   push:
     branches:
-      - "stable"
+      - stable
+
+permissions:
+  contents: write
+
 jobs:
   update-sdk:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clone SDK repository
+      - name: Checkout SDK repository
         uses: actions/checkout@v4
         with:
+          repository: JOHNnewcando/open.mp-sdk-test
+          ref: master
+          path: SDK
           clean: true
-          repository: "JOHNnewcando/open.mp-sdk-test"
-          path: "SDK"
-          ref: "master"
+          fetch-depth: 0
           submodules: recursive
           token: ${{ secrets.CI_TOKEN != '' && secrets.CI_TOKEN || github.token }}
 
-      - name: Update SDK files from dev branch
-        if: always()
+      - name: Sync master with dev
         shell: bash
         run: |
           cd SDK
-          git fetch --all --prune
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin --prune
+
           if git show-ref --verify --quiet refs/remotes/origin/dev; then
-            git rebase origin/dev
-            git push || true
+              echo "Syncing master -> origin/dev"
+
+              git checkout master
+              git reset --hard origin/dev
+
+              git push --force-with-lease origin master
+
+              echo "SDK synced successfully."
           else
-            echo "Remote branch origin/dev does not exist; skipping rebase/push"
+              echo "origin/dev does not exist."
           fi
 
   update-network:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Clone Network repository
+      - name: Checkout Network repository
         uses: actions/checkout@v4
         with:
+          repository: openmultiplayer/open.mp-network
+          ref: master
+          path: Network
           clean: true
-          repository: "openmultiplayer/open.mp-network"
-          path: "Network"
-          ref: "master"
+          fetch-depth: 0
           submodules: recursive
           token: ${{ secrets.CI_TOKEN != '' && secrets.CI_TOKEN || github.token }}
 
-      - name: Update Network files from dev branch
-        if: always()
+      - name: Sync master with dev
         shell: bash
         run: |
           cd Network
-          git fetch
-          git rebase origin/dev
-          git push || true
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin --prune
+
+          if git show-ref --verify --quiet refs/remotes/origin/dev; then
+              echo "Syncing master -> origin/dev"
+
+              git checkout master
+              git reset --hard origin/dev
+
+              git push --force-with-lease origin master
+
+              echo "Network synced successfully."
+          else
+              echo "origin/dev does not exist."
+          fi
