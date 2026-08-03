@@ -33,7 +33,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git fetch origin --all --prune
+          git fetch --all --prune
 
           if git show-ref --verify --quiet refs/remotes/origin/dev; then
             echo "Syncing master with origin/dev..."
